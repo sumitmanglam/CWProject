@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<body onload="process()">
+
+<h2>echo server</h2>
+
+<input id="ip" type="text" onkeyup="process(this.value)">
+
+<p id="demo"> </p>
+
+<script>
+//var myvar = setInterval(process,1);
+
+function process(food)
+{
+	console.log("process");
+
+  var xhttp= new XMLHttpRequest();
+
+  xhttp.onreadystatechange=function() {
+  	if(this.readyState==4 && this.status==200) {
+  		document.getElementById("demo").innerHTML=this.responseText;
+  	}
+  };
+
+  //var food=document.getElementById("ip").value;
+  xhttp.open("GET","/foodstore/?food="+food,true);
+  xhttp.send();
+}
+ 
+</script>
+<!--<button onclick="process()">click</button> -->
+</body>
+</html>

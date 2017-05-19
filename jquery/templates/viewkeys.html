@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  
+</head>
+<body>
+
+  <style type="text/css">
+   .col{
+    padding:0.5em;
+    margin:0.5em;
+  }
+
+</style>
+<div class="container">
+  <div class="row">
+    <h1>Table Data</h1>
+    <div id="div1"  class="col col-md-6">
+      <table id="tab1" border = 1 class="table">
+       {% for x in data -%}
+       <tr>
+        <td> {{ x.category }} </td>
+        <td> {{ x.action }} </td>
+        <td> {{ x.createddate }} </td>
+        {% set val=x.category+'-'+x.action -%}
+        <td> <input type = "checkbox" name={{val}} class="chbx"/></td>
+      </tr>
+      {% endfor -%}
+    </table>
+  </div>
+  <h3> Fill following fields</h3>
+  <span id="notification" class="col col-md-4">
+
+  </span>
+
+  <form action = "/inscbcvbert/" method = "POST">
+    <div class="col col-md-4">
+      Category<input type="text" class="form-control" id="cat" name="category">
+    </div>
+    <br>
+    <div class="col col-md-4 col-xs-6">
+      Action <input type="text" class="form-control" id="act" name="action">
+    </div>
+
+    <div class="col col-md-4">
+      <button  class="btn btn-primary pull-right" id="btn1" type="submit" >Add Data</button>
+    </div>
+  </form>
+</div>
+</div>
+
+<script >
+
+
+
+
+  $(document).ready(function(){
+
+    $("form").on('submit',function(event){
+      var cat=document.getElementById("cat").value;
+      var act=document.getElementById("act").value;
+              //alert("sumit");//
+              event.preventDefault();
+              //alert("sumit");
+              $.post("/insert/",{category: cat,action: act}, function(data, status){
+                //alert(data.cat);
+                
+                var table = document.getElementById("tab1");
+                var row = table.insertRow(0);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2); 
+
+                cell1.innerHTML = data.cat;
+                cell2.innerHTML = data.act;
+                cell3.innerHTML = data.dat;
+
+                document.getElementById("notification").innerHTML="<div class='alert alert-success alert-dismissable'>Item Inserted!</div>";
+              });
+
+            });
+  });
+
+
+  
+
+</script>  
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+</body>
+</html>

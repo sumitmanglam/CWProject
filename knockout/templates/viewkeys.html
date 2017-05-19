@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  
+</head>
+<body>
+
+  <style type="text/css">
+   .col{
+    padding:0.5em;
+    margin:0.5em;
+  }
+
+</style>
+<div class="container">
+  <div class="row">
+    <h1>Table Data</h1>
+    <div id="div1"  class="col col-md-6">
+      <table id="tab1" border = 1 class="table">
+        <thead><tr>
+          <th>Category</th><th>Action</th><th>Created At</th><th>delete</th>
+        </tr></thead>
+
+        <tbody databind="foreach:  keys">
+         <tr>
+          <td data-bind="text: category"></td>
+          <td data-bind="text: action"></td>
+          <td data-bind="text: createdDate"></td>
+
+          <td> <input data-bind="type = "checkbox" class="chbx"/></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+  <h3> Fill following fields</h3>
+  <span id="notification" class="col col-md-4">
+
+  </span>
+
+  <form action = "/inscbcvbert/" method = "POST">
+    <div class="col col-md-4">
+      Category<input type="text" class="form-control" id="cat" name="category">
+    </div>
+    <br>
+    <div class="col col-md-4 col-xs-6">
+      Action <input type="text" class="form-control" id="act" name="action">
+    </div>
+
+    <div class="col col-md-4">
+      <button  class="btn btn-primary pull-right" id="btn1" type="submit" >Add Data</button>
+    </div>
+  </form>
+</div>
+</div>
+
+<script >
+
+
+
+
+  $(document).ready(function(){
+
+    $("form").on('submit',function(event){
+
+
+      var cat=document.getElementById("cat").value;
+      var act=document.getElementById("act").value;
+
+      event.preventDefault();
+
+      $.post("/insert/",{category: cat,action: act}, function(data, status){
+                //alert(data.cat); 
+                document.getElementById("notification").innerHTML="<div class='alert alert-success alert-dismissable'>Item Inserted!</div>";
+              });
+
+    });
+  });
+
+function KeysViewModel() {
+    var self = this;
+
+    // Non-editable catalog data - would come from the server
+    self.keys = data;
+
+    // Editable data
+    self.seats = ko.observableArray([
+        new SeatReservation("Steve", self.availableMeals[0]),
+        new SeatReservation("Bert", self.availableMeals[0])
+    ]);
+
+    // Operations
+    self.addSeat = function() {
+        self.seats.push(new SeatReservation("", self.availableMeals[0]));
+    }
+}
+  
+
+</script>  
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+</body>
+</html>

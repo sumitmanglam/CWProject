@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  
+</head>
+<body>
+
+  <style type="text/css">
+     .col{
+      padding:0.5em;
+      margin:0.5em;
+   }
+
+</style>
+<div class="container">
+  <div class="row">
+  <h1>Table Data</h1>
+   <div id="div1"  class="col col-md-6">
+      <table id="tab1" border = 1 class="table">
+         {% for x in data -%}
+         <tr>
+            <td> {{ x.category }} </td>
+            <td> {{ x.action }} </td>
+            <td> {{ x.createddate }} </td>
+            {% set val=x.category+'-'+x.action -%}
+            <td> <input type = "checkbox" name={{val}} class="chbx"/></td>
+         </tr>
+         {% endfor -%}
+      </table>
+   </div>
+   <h3> Fill following fields</h3>
+   <span id="notification" class="col col-md-4">
+      
+   </span>
+   <div class="col col-md-4">
+      Category<input type="text" class="form-control" id="cat">
+   </div>
+   <br>
+   <div class="col col-md-4 col-xs-6">
+    Action <input type="text" class="form-control" id="act">
+ </div>
+ <br>
+ <div class="col col-md-4 col-xs-6">
+   Created At   <input type="text" class="form-control" id="dat">
+</div>
+<div class="col col-md-4"><button  class="btn btn-primary pull-right" onclick="add()">Add Data</button>
+</div>
+</div>
+</div>
+<<button onclick="delet()" id="del"> Delete selected keys</button>
+<script >
+
+    function add()
+   {
+
+      cat=document.getElementById("cat").value;
+      act=document.getElementById("act").value;
+      dat=document.getElementById("dat").value;
+
+      var xhttp; 
+
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+       if (this.readyState == 4 && this.status == 200) {
+         var rtext=this.responseText;
+         //document.getElementById("tab1").innerHTML = this.responseText;
+         document.getElementById("notification").innerHTML="<div class='alert alert-success'>Item Inserted!</div>";
+         var table = document.getElementById("tab1");
+         var row = table.insertRow(0);
+         var cell1 = row.insertCell(0);
+         var cell2 = row.insertCell(1);
+         var cell3 = row.insertCell(2);
+         var cell4 = row.insertCell(3);
+         cell1.innerHTML = cat;
+         cell2.innerHTML = act;
+         cell3.innerHTML = dat;
+         //cell4.innerHTML = "<input type = "checkbox" name=cat+act class="chbx"/>";
+      }
+   };
+
+
+   xhttp.open("GET", "/view_ajax/?cat="+cat+"&act="+act+"&dat="+dat, true);
+   xhttp.send();
+  
+   /*function delet()
+   {
+      var checkboxes = document.getElementsByClassName("chbx");
+    var checkboxesChecked = "";
+  // loop over them all
+  for (var i=0; i<checkboxes.length; i++) {
+     // And stick the checked ones onto an array...
+     if (checkboxes[i].checked) {
+        checkboxesChecked+=checkboxes[i].name+" ";
+     
+  var xhttp; 
+
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+       if (this.readyState == 4 && this.status == 200) {
+     }
+   }
+   xhttp.open("POST", "/remove2/", true);
+   xhttp.send("checkeditem="+checkboxesChecked);
+*/
+
+
+}
+
+</script>  
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+</body>
+</html>

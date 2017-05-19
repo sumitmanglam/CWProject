@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body >
+
+<h2>echo server</h2>
+
+<input id="ip" type="text">
+
+<p id="demo"> </p>
+
+<script>
+var myvar = setInterval(loadDoc,1);
+function loadDoc() {
+      document.getElementById("demo").innerHTML ="you entered"+document.getElementById("ip").value;
+    }
+ 
+</script>
+
+</body>
+</html>

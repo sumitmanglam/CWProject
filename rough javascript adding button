@@ -1,0 +1,41 @@
+/*function add(){
+
+         var inp_cat = document.createElement("input");
+         var inp_act = document.createElement("input");
+         var inp_dat = document.createElement("input");
+         var element = document.getElementById("div2");
+         element.appendChild(inp_cat);
+         element.appendChild(inp_act);
+         element.appendChild(inp_dat);
+
+         var a=inp_cat.innerHTML;
+         var b=inp_act.innerHTML;
+         var d=inp_dat.innerHTML;
+
+         var add_button = document.createElement("button");
+         element.appendChild(add_button);
+         var text = document.createTextNode("ok");
+         //add_button.onclick="show()";
+         add_button.addEventListener("click",show);
+         add_button.appendChild(text);
+         add_button.setAttributeNode(att);
+         //document.getElementsById("add_button").onclick="show(a,b,d)";
+         
+
+         }
+
+      function show()
+      {
+         var xhttp; 
+      
+         xhttp = new XMLHttpRequest();
+         xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("tab1").innerHTML = this.responseText;
+            }
+         };
+         xhttp.open("GET", "/view_ajax/?c="+c+"&a="+a+"&d="+d, true);
+         xhttp.send();
+
+
+   }*/ 

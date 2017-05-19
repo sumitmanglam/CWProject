@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+   <body>
+      <form action = "http://172.16.2.84:9874/remove2/" method = "POST">
+      <table border = 1>
+         {% for x in data -%}
+          
+            <tr>
+               <th> {{ x.category }} </th>
+               <td> {{ x.action }} </td>
+               <td> {{ x.createddate }} </td>
+               {% set val=x.category+'-'+x.action -%}
+
+               <td> <input type = "checkbox" name={{val}} /></td>
+            </tr>
+         {% endfor -%}
+      </table>
+      <p><input type = "submit" value = "delete" /></p>
+
+      </form>
+      <p><a href="/add"><input type = "submit" value = "add" /> </a> </p>      
+   </body>
+</html>
