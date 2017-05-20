@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,jsonify
 from flask import request
 from flask import url_for ,redirect
 from flask import render_template
@@ -23,6 +23,8 @@ session = cluster.connect('cw')
 CASSANDRA_KEYS_TABLE='bhrigukeystracking'
 
 @app.route('/')
+def load():
+	return render_template('viewkeys.html')
 @app.route("/view")
 def GetKeys():
 	try:
@@ -32,14 +34,14 @@ def GetKeys():
 		categories=[]
 		actions=[]
 		for row in session.execute(query):
-			#print type(row.isactive)
-			if row.isactive==True:
-				data.append(row)
+			print type(row)
+			if row.isactive:
+				#data.append(row)
+				data.append({'category': row.category,'action': row.action,'createddate': row.createddate.strftime('%Y-%m-%dT%H:%M:%S'),'wantdelete':False})
 				categories.append(row.category)
 				actions.append(row.action)
 				#data=data.append([row.category,row.actions])
-
-		return render_template('viewkeys.html',data=data)
+		return jsonify(data)
 		#return categories[:-1]
 	except:
 		return "cought"
@@ -58,12 +60,32 @@ def AddKeys():
 	e4 = True
 	#print e1, e2, e3, e4
 	try:
+		query="SELECT * FROM {} WHERE category = '{}' AND action='{}'".format(CASSANDRA_KEYS_TABLE,e1,e2)
+		for row in session.execute(query):
+			return "",304
+
 		query="INSERT INTO {} (category,action,createddate,isactive) values ('{}','{}','{}',{})".format(CASSANDRA_KEYS_TABLE,e1,e2,e3,e4)
 		session.execute(query)
-		#return e1+e2+e3
 		return jsonify({'cat': e1,'act': e2,'dat': e3})
 	except:
 		print "Caught"
+		return sys.exc_info()
+
+@app.route('/delete/',methods = ['POST'])
+def delete():
+	frm=request.args["checkeditem"]
+	col="isactive"
+	frm=frm.split(" ")
+	try:
+		for i in frm :
+			if i!='submit':
+				y=i.split('-')
+				e1=y[0]
+				e2=y[1]
+				query="UPDATE {} SET isactive=False WHERE category='{}' AND action='{}'".format(CASSANDRA_KEYS_TABLE,e1,e2)
+				session.execute(query)
+		return "done"
+	except:
 		return sys.exc_info()
 
 

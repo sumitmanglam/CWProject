@@ -30,8 +30,7 @@
           <td data-bind="text: category"></td>
           <td data-bind="text: action"></td>
           <td data-bind="text: createddate"></td>
-          <td> <button data-bind="click: $parent.removeKey" class="btn">delete</button></td>
-          
+
           {# <td> <input type = "checkbox" data-bind="checked: wantdelete" class="chbx"/></td> #}
         </tr>
 
@@ -103,13 +102,17 @@ $("#btn1").on('click',function(event){
     });
    
 
-    viewmodel.keys.removekeys()
+   $("#btn2").on('click',function(event){
+      
+           //alert("button clicked");
+       //event.preventDefault();
 
+      $.post("/delete/", function(data, status){
 
               var checkeditems
                 //keys.push({'category':data.cat,'action': data.act,'createdDate': data.dat});
 
-                viewModel.keys.remove(this);
+                viewModel.keys.remove({'category': data.cat,'action': data.act,'createddate': data.dat});
               });
     });
   });
@@ -122,3 +125,4 @@ $("#btn1").on('click',function(event){
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 </body>
 </html>
+
