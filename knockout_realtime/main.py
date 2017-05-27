@@ -25,7 +25,7 @@ CASSANDRA_REAL_TIME_KEYS_TABLE='realtimeeventtrackingkeys'
 
 @app.route('/')
 def load():
-  return render_template('viewkeysimageundo.html')
+  return render_template('viewkeysimages.html')
 
 @app.route("/view")
 def GetKeys():
@@ -56,14 +56,17 @@ def AddKeys():
   realtimeflag = False
   #print e1, e2, e3, e4
   try:
-    query="SELECT * FROM {} WHERE category = '{}' AND action='{}'".format(CASSANDRA_KEYS_TABLE,category,action)
-    for row in session.execute(query):
-    	if row.isactive:
-    		return "Key already exists",409
-
-    query="INSERT INTO {} (category,action,createddate,isactive,isrealtimetrackingactive) values ('{}','{}','{}',{},{})".format(CASSANDRA_KEYS_TABLE,category,action,createddate,isactive,realtimeflag)
-    session.execute(query)
-    return jsonify({'cat': category,'act': action,'dat': createddate,'realtime':str(realtimeflag)})
+  	status = 201
+  	query="SELECT * FROM {} WHERE category = '{}' AND action='{}'".format(CASSANDRA_KEYS_TABLE,category,action)
+  	for row in session.execute(query):
+  		if row.isactive:
+  			return "Key already exists",409
+  		else:
+  			status = 205
+  	query="INSERT INTO {} (category,action,createddate,isactive,isrealtimetrackingactive) values ('{}','{}','{}',{},{})".format(CASSANDRA_KEYS_TABLE,category,action,createddate,isactive,realtimeflag)
+  	session.execute(query)
+  	print "added"
+  	return jsonify({'cat': category,'act': action,'dat': createddate,'realtime':str(realtimeflag)}),status
   except:
     print "Caught"
     return sys.exc_info()
@@ -132,6 +135,8 @@ def delete():
 
   category = request.form['category']
   action= request.form['action']
+  key=category+'-'+action
+
   try:
     #deleting from key table
 
@@ -142,6 +147,9 @@ def delete():
 
     query="UPDATE {} SET isactive=False,isrealtimetrackingactive=False WHERE category='{}' AND action='{}'".format(CASSANDRA_KEYS_TABLE,category,action)       
     session.execute(query)
+    query="UPDATE {} SET isactive=False WHERE key='{}'".format(CASSANDRA_REAL_TIME_KEYS_TABLE,key)       
+    session.execute(query)
+    
     print "deleted from key table"
     return "deleted"
 

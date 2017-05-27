@@ -31,7 +31,7 @@
           <td data-bind="text: category"></td>
           <td data-bind="text: action"></td>
           <td data-bind="text: createddate"></td>
-          <td> <button  data-bind="click: $parent.removeKeys">delete</button></td>
+          <td> <img src="static/delete.jpeg" width="30em" height="30em" data-bind="click: $parent.removeKeys"></td>
           <td> <img width="30em" height="30em" data-bind="click: $parent.isRealTimeActive, attr: { src: imagesource }"></td>
           
         </tr>
@@ -70,6 +70,15 @@
     return patt.test(str);
   }
 
+  function notify(alertclass,type,msg)
+  {
+    $("#notification").empty().append(`
+    <div class="alert alert-${alertclass} alert-dismissable fade in">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>${type} </strong>${msg}.</div>`);
+
+  }
+
   function keycreate(category,action,createddate,flag)
   {
     var self = this;
@@ -94,8 +103,8 @@
 
     this.removeKeys= function(item,event){
             //alert("hellow");
-            console.log(item);
-            console.log(event.target.parentElement.parentElement);
+            //console.log(item);
+            //console.log(event.target.parentElement.parentElement);
             var curr_row=event.target.parentElement.parentElement;
              
             var x=this;
@@ -103,170 +112,120 @@
             console.log(x);
             console.log(row);
             
-            $(curr_row).css("color","red");
             
             //$(this).parent().css({"color": "red", "border": "2px solid red"});
-
-
-            //alert(row);
             var cat = row.category; 
             var act = row.action;
-            //alert(this);
-            //var self=this;
+            
             $.post({
               url:"/delete/",
               data:{category: cat,action: act},
               success:function(data,status,xhr){
-              //alert(data);
-                //viewModel.keys.remove({'category': data.cat,'action': data.act,'createddate': data.dat});
+
                 self.keys.remove(x);
               },
 
               error: function (err) {
                 if(err.status==409){
-                  //alert(err);
-                  $("#notification").empty().append(`
-              <div class="alert alert-warning alert-dismissable fade in">
-              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <strong>Warning! </strong>${err.responseText}.
-              </div>
-              `);
+                 
+                  notify("warning","Warning!",err.responseText);
 
-                self.keys.remove(x);
+                  self.keys.remove(x);
 
                 }
-                else{         
+                else     
                   alert("Server error - " + err);
-                }
               }
             });
           };
 
     this.isRealTimeActive = function(elementdata){
-            //alert("hellow");
+
             var x=this;
             var row = $(this)[0];
             var toggle;
-            //alert(row);
+
             //console.log(elementdata);
             var cat = row.category;
             var act = row.action;
             var flag =row.isrealtimetrackingactive;
             console.log(row.isrealtimetrackingactive)
             console.log(flag);
-            //alert(this);
-           // var self=this;
+
             $.post({
               url:"/real_time_table_operation/",
               data:{category: cat,action: act,isrealtimetrackingactive: flag},
               success:function(data,status,xhr){
-                
-                //x.isrealtimetrackingactive=data;
-                //console.log(data);
 
                   elementdata.isrealtimetrackingactive(data);
 
                   var msg= (data=="True")?"Key is added to real time tracking":"Key is removed from real time tracking"
-                    $("#notification").empty().append(`
-              <div class="alert alert-success alert-dismissable fade in">
-              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <strong>Success! </strong>${msg}.
-              </div>
-              `);
-                  //alert("done ");
-                  
+                  notify("success","Success!",msg);            
               },
 
               error: function (err) {
-                if(err.status==409){
-                  //console.log(err);
-                  $("#notification").empty().append(`
-              <div class="alert alert-warning alert-dismissable fade in">
-              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <strong>Warning! </strong>${err.responseText}.
-              </div>
-              `);
-              console.log(elementdata);
-                var toggle="True";
-                //console.log(elementdata.isrealtimetrackingactive())
-                if(elementdata.isrealtimetrackingactive()=="True")
-                  toggle="False";
-                //console.log(toggle)
-                elementdata.isrealtimetrackingactive(toggle);
-                }
-                else{         
-                  alert("Server error - " + err);
-                }
+
+                  if(err.status==409){
+                     
+                    notify("warning","Warning!",err.responseText);
+                    
+                    var toggle="True";
+                    if(elementdata.isrealtimetrackingactive()=="True")
+                      toggle="False";
+                    
+                    elementdata.isrealtimetrackingactive(toggle);
+                  }
+
+                  else       
+                    alert("Server error - " + err);
               }
+
             });
+
           };
 
 
 
     this.addKeys =function(){
+              
               var cat=document.getElementById("cat").value;
-               var act=document.getElementById("act").value;
+              var act=document.getElementById("act").value;
 
 
                if(cat==null||cat==""||act==null||act=="")
                {
-                //alert("fill all the fields");
-                $("#notification").empty().append(`
-              <div class="alert alert-danger alert-dismissable fade in">
-              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <strong >error! </strong> fill all the fields first.
-              </div>
-              `);
-                return false;
-              }
+                  notify("danger","error!"," fill all the fields first.");
+                  return false;
+               }
 
 
 
               if((isalpha_numeric(cat)&&isalpha_numeric(act))==false)
               {
-                //alert("spaces and special charecters are not allowed");
-                $("#notification").empty().append(`
-              <div class="alert alert-warning alert-dismissable fade in">
-              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <strong>Warning! </strong>spaces and special charecters are not allowed.
-</div>
-              `);
+                notify("warning","Warning!"," spaces and special charecters are not allowed.");
                 return false;
               }
+            
               $.post({
-                url:"/insert/",
-                data:{category: cat,action: act},
-                success:function(data,status,xhr){
-                  //console.log(data);
-                  //keys.push({'category':data.cat,'action': data.act,'createdDate': data.dat});
-                    self.keys.splice(0,0,new keycreate(data.cat,data.act,data.dat,data.realtime));
-                    //its equivalent to push but slice is used for inserting at the top unlike push which insert at the end of the observable aaray 
-                    //alert("key inserted successfuly");
+                  url:"/insert/",
+                  data:{category: cat,action: act},
+                  success:function(data,status,xhr){
+                    //console.log(data);
+                      self.keys.splice(0,0,new keycreate(data.cat,data.act,data.dat,data.realtime));
 
-                    $("#notification").empty().append(`
-              <div class="alert alert-success alert-dismissable fade in">
-              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <strong>Success! </strong>Key inserted successfully.
-</div>
-              `);
+                      if(xhr.status==205)
+                        location.reload(true);
 
-                  
-                },
-                error: function (err) {
-                if(err.status==409){
-                  //alert(err);
-                  //console.log(err);
-                  $("#notification").empty().append(`
-              <div class="alert alert-warning alert-dismissable fade in">
-              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <strong>Warning! </strong>${err.responseText}.
-</div>
-              `);
-                }
-                else{         
-                  alert("Server error - " + err);
-                }
-              }
+                      notify("success","Success!"," Key inserted successfully.");           
+
+                  },
+                  error: function (err) {
+                      if(err.status==409)
+                        notify("warning","Warning! ",err.responseText);
+                      else       
+                        alert("Server error - " + err);
+                 }
+
               });
 
               document.getElementById("cat").value="";
@@ -275,6 +234,7 @@
           };
 
     }
+
     var ViewModel = new viewModel();
     ko.applyBindings(ViewModel);
 
@@ -285,7 +245,7 @@
         $(data).each(function(entry){
           console.log(data[entry]);
           var obj = data[entry];
-           ViewModel.keys.push(new keycreate(obj.category,obj.action,obj.createddate,obj.isrealtimetrackingactive))
+          ViewModel.keys.push(new keycreate(obj.category,obj.action,obj.createddate,obj.isrealtimetrackingactive))
         });
         //viewModel.keys(data);
         //alert("Data: " + data + "\nStatus: " + status);
